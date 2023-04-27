@@ -1,5 +1,26 @@
+import os
+import re
 from nipype.interfaces.fsl import maths
+from nipype.interfaces.fsl import Split
 
+
+def split_fsl(in_file: str, out_base_name: str, dimension='t', output_type='NIFTI') -> None:
+    """
+    Split 4D fMRI into 3D
+    :param in_file: input 4D nifti file
+    :param out_base_name: output 3D nifti(gz) file, the output will have 000x sufix
+    :param dimension: this can be in time:t or in some axes: x,y,z
+    :param output_type: 'NIFTI'
+    """
+    split = Split()
+    split.inputs.dimension = dimension
+    split.inputs.in_file = in_file
+    split.inputs.out_base_name = out_base_name
+    split.inputs.output_type = output_type
+    print(split.cmdline)
+    res = split.run()
+
+    
 def extract_gICA_files(base_path: str) -> list:
     """
     Extract every component file from gICA directory
@@ -16,6 +37,7 @@ def extract_gICA_files(base_path: str) -> list:
     file_names = list(filter(r.match, file_names))
 
     return file_names
+
 
 def ztop_threshold(in_file: str, out_base_name: str, output_type='NIFTI') -> None:
     """
@@ -34,6 +56,7 @@ def ztop_threshold(in_file: str, out_base_name: str, output_type='NIFTI') -> Non
     print(math_command.cmdline)
     res = math_command.run()
 
+    
 def threshold(in_file: str, out_base_name: str, th=5, output_type='NIFTI') -> None:
     """
     Binary image based on a threshold, use following percentage (0-100) of ROBUST
@@ -51,6 +74,7 @@ def threshold(in_file: str, out_base_name: str, th=5, output_type='NIFTI') -> No
     print(math_command.cmdline)
     res = math_command.run()
 
+    
 def bin_img(in_file: str, out_base_name: str, output_type='NIFTI') -> None:
     """
     Binarize the image, use (current image>0) to binarise
@@ -66,6 +90,7 @@ def bin_img(in_file: str, out_base_name: str, output_type='NIFTI') -> None:
     print(math_command.cmdline)
     res = math_command.run()
 
+    
 def sub_img(in_file: str, in_file_subs: str, out_base_name: str, output_type='NIFTI') -> None:
     """
     Substract image, subtract following input from current image.
@@ -82,3 +107,20 @@ def sub_img(in_file: str, in_file_subs: str, out_base_name: str, output_type='NI
     math_command.inputs.output_type = output_type
     print(math_command.cmdline)
     res = math_command.run()
+
+    
+def p_val_threshold(absolute_gica_path: str, file_gica_name: str, output_gica_name: str, th: int=5):
+    """
+    Extract the activation values from gica prob map, using (uncorrected) P<0.05.
+    This help to reduce the individual noise.
+    :param absolute_gica_path: Directory path
+    :param file_gica_name: file gica name
+    :param output_gica_name: output file gica name
+    """
+    ztop_threshold(absolute_gica_path + file_gica_name, absolute_gica_path + 'pval_' + output_gica_name)
+    threshold(absolute_gica_path + 'pval_' + output_gica_name + '.nii',
+              absolute_gica_path + 'thr5_pval_' + output_gica_name, th)
+    bin_img(absolute_gica_path + 'thr5_pval_' + output_gica_name + '.nii',
+            absolute_gica_path + 'bin_thr5_pval_' + output_gica_name)
+    sub_img(absolute_gica_path + file_gica_name, absolute_gica_path + f'bin_thr{th}_pval_' + output_gica_name,
+            absolute_gica_path + f'res_bin_thr{th}_pval_' + output_gica_name)
