@@ -63,13 +63,18 @@ def split_fsl(in_file: str, out_base_name: str, dimension='t', output_type='NIFT
 # relevant_path = [relevant_path_cn_ad_adni3, relevant_path_cn_ad_v2_adni3, relevant_path_cn_mci_adni3,
 #                  relevant_path_cn_mci_v2_adni3]
 
-relevant_path_ad_adni3 = '/run/media/kevrodz/KEVS/rs_networks/rs_networks_AD_ADNI/'
-relevant_path_cn_ad_adni3 = '/run/media/kevrodz/KEVS/rs_networks/rs_networks_CN_AD_ADNI3/'
-relevant_path_mci_adni3 = '/run/media/kevrodz/KEVS/rs_networks/rs_networks_MCI_ADNI/'
-relevant_path_cn_mci_adni3 = '/run/media/kevrodz/KEVS/rs_networks/rs_networks_CN_MCI_ADNI/'
+# relevant_path_ad_adni3 = '/run/media/kevrodz/KEVS/rs_networks/rs_networks_AD_ADNI/'
+# relevant_path_cn_ad_adni3 = '/run/media/kevrodz/KEVS/rs_networks/rs_networks_CN_AD_ADNI3/'
+# relevant_path_mci_adni3 = '/run/media/kevrodz/KEVS/rs_networks/rs_networks_MCI_ADNI/'
+# relevant_path_cn_mci_adni3 = '/run/media/kevrodz/KEVS/rs_networks/rs_networks_CN_MCI_ADNI/'
 
-relevant_path = [relevant_path_ad_adni3, relevant_path_cn_ad_adni3, relevant_path_mci_adni3,
-                 relevant_path_cn_mci_adni3]
+# relevant_path = [relevant_path_ad_adni3, relevant_path_cn_ad_adni3, relevant_path_mci_adni3,
+#                  relevant_path_cn_mci_adni3]
+
+relevant_path_biomarcadores_GK = '/media/gruneco-server/DB_GRUNECO/BIOMARCADORES_GICA_300ROI/GK-GICA/'
+relevant_path_biomarcadores_GW = '/media/gruneco-server/DB_GRUNECO/BIOMARCADORES_GICA_300ROI/GW-GICA/'
+
+relevant_path = [relevant_path_biomarcadores_GK, relevant_path_biomarcadores_GW]
 
 for gica in relevant_path:
     files_gica = extract_gICA_files(gica)
